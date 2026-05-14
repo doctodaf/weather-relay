@@ -15,6 +15,13 @@ write_api = client.write_api(write_options=SYNCHRONOUS)
 
 @app.route("/weather", methods=["GET", "POST"])
 def receive():
+    print("=== INCOMING REQUEST ===")
+    print("Method:", request.method)
+    print("Args:", request.args.to_dict())
+    print("Form:", request.form.to_dict())
+    print("Body:", request.get_data(as_text=True))
+    print("Headers:", dict(request.headers))
+    
     data = {**request.args.to_dict(), **request.form.to_dict()}
     if not data:
         return "No data", 400
@@ -33,3 +40,4 @@ def receive():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
+
