@@ -15,16 +15,21 @@ write_api = client.write_api(write_options=SYNCHRONOUS)
 
 @app.route("/weather", methods=["GET", "POST"])
 def receive():
-    data = request.form.to_dict()
+    data = {**request.args.to_dict(), **request.form.to_dict()}
+    if not data:
+        return "No data", 400
     point = Point("ecowitt")
+    written = 0
     for key, value in data.items():
         try:
             point = point.field(key, float(value))
+            written += 1
         except (ValueError, TypeError):
             pass
-    write_api.write(bucket=INFLUX_BUCKET, record=point)
-    return "OK", 200
+    if written > 0:
+        write_api.write(bucket=INFLUX_BUCKET, record=point)
+        return "OK", 200
+    return "No numeric data", 400
 
 if __name__ == "__main__":
-
     app.run(host="0.0.0.0", port=10000)
