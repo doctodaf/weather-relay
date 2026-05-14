@@ -13,7 +13,7 @@ INFLUX_BUCKET = os.environ["INFLUX_BUCKET"]
 client = InfluxDBClient(url=INFLUX_URL, token=INFLUX_TOKEN, org=INFLUX_ORG)
 write_api = client.write_api(write_options=SYNCHRONOUS)
 
-@app.route("/weather", methods=["POST"])
+@app.route("/weather", methods=["GET", "POST"])
 def receive():
     data = request.form.to_dict()
     point = Point("ecowitt")
@@ -26,4 +26,5 @@ def receive():
     return "OK", 200
 
 if __name__ == "__main__":
+
     app.run(host="0.0.0.0", port=10000)
